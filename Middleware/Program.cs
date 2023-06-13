@@ -1,6 +1,10 @@
+using Middleware.Common.EventBus;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.AddEventBus();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -21,5 +25,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+EventBusExtensions.ConfigureEventBus(app);
 
 app.Run();
