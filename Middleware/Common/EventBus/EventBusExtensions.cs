@@ -32,7 +32,7 @@ public static class EventBusExtensions
             var logger = sp.GetRequiredService<ILogger<EventBusRabbitMq>>();
             var retryCount = 5;
 
-            return new EventBusRabbitMq(persistenceConnection, logger, sp, "ELMAtoMQ", retryCount);
+            return new EventBusRabbitMq(persistenceConnection, logger, sp, "elma", retryCount);
         });
 
         return builder;

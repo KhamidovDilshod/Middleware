@@ -41,12 +41,16 @@ public class EventBusRabbitMq : IEventBus
 
         channel.ExchangeDeclare(exchange: BROKER_NAME, type: "direct");
 
-        channel.QueueDeclare(
-            queue: _queueName,
-            durable: true,
-            exclusive: true,
-            autoDelete: false,
-            arguments: null);
+        if (!IsQueueExists(channel))
+        {
+            channel.QueueDeclare(
+                queue: _queueName,
+                durable: true,
+                exclusive: true,
+                autoDelete: false,
+                arguments: null);
+        }
+        
         channel.CallbackException += (sender, eventArgs) =>
         {
             _logger.LogWarning(eventArgs.Exception, "Recreating RabbitMQ consumer channel");
@@ -74,7 +78,7 @@ public class EventBusRabbitMq : IEventBus
         else
         {
             _logger.LogError("StartBasicConsume can't call on _consumerChannel==null");
-        }   
+        }
     }
 
     private async Task Consumer_Received(object sender, BasicDeliverEventArgs @event)
@@ -119,5 +123,18 @@ public class EventBusRabbitMq : IEventBus
     {
         var eventName = "ELMAtoMQ";
         StartBasicConsume();
+    }
+
+    private bool IsQueueExists(IModel channel)
+    {
+        try
+        {
+            channel.QueueDeclarePassive(_queueName);
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 }
